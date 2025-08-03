@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Friendship Day</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: black;
+            font-family: 'Arial', sans-serif;
+            overflow-x: hidden;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            justify-content: center;
+            align-items: center;
+        }
+        .name-animation {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.3);
+            animation: slideIn 2s ease-in-out;
+            text-align: center;
+            cursor: pointer;
+        }
+        @keyframes slideIn {
+            0% { transform: translateY(-100vh); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+        .wishing-text {
+            font-size: 1.2rem;
+            color: white;
+            margin: 1rem 0;
+            animation: fadeIn 3s ease-in-out 2s forwards;
+            opacity: 0;
+            text-align: center;
+            max-width: 90%;
+        }
+        @keyframes fadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+        .friend-symbol {
+            font-size: 2rem;
+            margin: 5px;
+            animation: popIn 1s ease-in-out forwards;
+            animation-delay: calc(3s + var(--i) * 0.5s);
+            opacity: 0;
+            color: white;
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
+        }
+        @keyframes popIn {
+            0% { transform: scale(0); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .final-text {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #ffd700;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
+            animation: glow 2s ease-in-out infinite alternate;
+            position: fixed;
+            bottom: 20px;
+            text-align: center;
+            opacity: 0;
+            animation-delay: 5s;
+            animation-fill-mode: forwards;
+        }
+        @keyframes glow {
+            0% { text-shadow: 0 0 10px rgba(255, 215, 0, 0.8); }
+            100% { text-shadow: 0 0 20px rgba(255, 215, 0, 1); }
+        }
+        .canvas-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: -1;
+        }
+        .input-container {
+            width: 90%;
+            max-width: 400px;
+            margin: 1rem auto;
+            display: none;
+        }
+        .input-container.active {
+            display: flex;
+        }
+        @media (max-width: 640px) {
+            .name-animation {
+                font-size: 1.8rem;
+            }
+            .wishing-text {
+                font-size: 1rem;
+            }
+            .friend-symbol {
+                font-size: 1.5rem;
+            }
+            .final-text {
+                font-size: 1.5rem;
+            }
+            input, button {
+                font-size: 0.9rem;
+                padding: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="backgroundCanvas" class="canvas-container"></canvas>
+    <div id="nameDisplay" class="name-animation" onclick="showInput()">Dear <span id="friendName">Yuvraj</span></div>
+    <div class="input-container flex flex-col items-center" id="inputContainer">
+        <input id="nameInput" type="text" placeholder="Enter friend's name" class="p-2 m-2 rounded border w-full">
+        <button onclick="updateName()" class="bg-blue-500 text-white p-2 rounded hover:bg-blue-600 w-full">Update Name</button>
+    </div>
+    <div class="wishing-text">You're the best! Wishing you endless joy and laughter on this Friendship Day!</div>
+    <div class="flex flex-wrap justify-center">
+        <span class="friend-symbol" style="--i: 1;">😊</span>
+        <span class="friend-symbol" style="--i: 2;">🎉</span>
+        <span class="friend-symbol" style="--i: 3;">❤️</span>
+        <span class="friend-symbol" style="--i: 4;">🌟</span>
+    </div>
+    <div class="final-text">Happy Friendship Day!</div>
+    <audio id="partySound" src="https://www.soundjay.com/buttons/party-horn.mp3" preload="auto"></audio>
+
+    <script>
+        function showInput() {
+            document.getElementById('inputContainer').classList.add('active');
+        }
+
+        function updateName() {
+            const name = document.getElementById('nameInput').value.trim() || 'Friend';
+            localStorage.setItem('friendName', name);
+            document.getElementById('friendName').textContent = name;
+            document.getElementById('inputContainer').classList.remove('active');
+        }
+
+        window.onload = () => {
+            const savedName = localStorage.getItem('friendName') || 'Yuvraj';
+            document.getElementById('friendName').textContent = savedName;
+            document.getElementById('nameInput').value = savedName === 'Yuvraj' ? '' : savedName;
+
+            setTimeout(() => {
+                const audio = document.getElementById('partySound');
+                audio.play().catch(err => console.log('Audio play failed:', err));
+            }, 5000);
+        };
+
+        const canvas = document.getElementById('backgroundCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+            for (let i = 0; i < 5; i++) {
+                ctx.beginPath();
+                ctx.arc(Math.random() * canvas.width, Math.random() * canvas.height, 15, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            requestAnimationFrame(draw);
+        }
+
+        draw();
+    </script>
+</body>
+</html>
